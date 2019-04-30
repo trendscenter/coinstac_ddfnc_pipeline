@@ -27,6 +27,10 @@ def local_cache_to_input(args):
     return ops.cache_to_input(args, PREFIX)
 
 
+def local_cache_to_output(args):
+    return ops.cache_to_output(args, PREFIX)
+
+
 def local_dump_cache(args):
     return ops.dump_cache(args, PREFIX)
 

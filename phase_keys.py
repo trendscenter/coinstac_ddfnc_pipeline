@@ -16,6 +16,7 @@ import coinstac_ddfnc_preproc.local as dfncpp_local
 import coinstac_ddfnc_preproc.remote as dfncpp_remote
 import coinstac_dkmeans_ms.local as dkm_local
 import coinstac_dkmeans_ms.remote as dkm_remote
+import coinstac_ddfnc_stats.local as dfnc_stats_local
 
 # Init
 """
@@ -121,26 +122,16 @@ NOOP_REMOTE = [
 INIT_LOCAL = [
     dict(
         do=[
-            ops_local.local_load_datasets,
-            ops_local.local_output_to_input,
-            mask_local.masking_local_1,
-            ops_local.local_output_to_cache,
-            ops_local.local_cache_to_input,
-            drm_local.drm_local_1,
+            ops_local.local_input_to_cache,
+            ops_local.local_cache_to_output
         ],
         recv=[],
         send='local_init',
         args=[
             [],
-            [],
-            [],
-            [],
             []
         ],
         kwargs=[
-            {},
-            {},
-            {},
             {},
             {}
         ],
@@ -150,19 +141,16 @@ INIT_LOCAL = [
 INIT_REMOTE = [
     dict(
         do=[
-            drm_remote.drm_remote_1,
-            ops_remote.remote_output_to_cache,
-            ops_remote.remote_dump_cache_to_mat
+            ops_remote.remote_input_to_cache,
+            ops_remote.remote_cache_to_output
         ],
         recv=INIT_LOCAL[0].get("send"),
         send='remote_init',
         args=[
             [],
-            [],
             []
         ],
         kwargs=[
-            {},
             {},
             {}
         ],
@@ -709,19 +697,31 @@ DKM_NOEX_REMOTE.append(
 
 DFNC_STATS_LOCAL = [
     dict(
-        do=[],
-        recv=DKMEANS_REMOTE[4].get('send'),
+        do=[
+            dfnc_stats_local.ddfnc_state_local_stats
+        ],
+        recv=DKM_NOEX_REMOTE[-1].get('send'),
         send='dkm_local_stats',
-        args=[],
-        kwargs=[],
+        args=[
+            []
+        ],
+        kwargs=[
+            {}
+        ],
     )
 ]
 DFNC_STATS_REMOTE = [
     dict(
-        do=[],
+        do=[
+            ops_remote.remote_noop
+        ],
         recv=DFNC_STATS_LOCAL[0].get('send'),
         send='dkm_remote_stats',
-        args=[],
-        kwargs=[],
+        args=[
+            []
+        ],
+        kwargs=[
+            {}
+        ],
     )
 ]

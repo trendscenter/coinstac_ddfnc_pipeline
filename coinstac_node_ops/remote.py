@@ -23,6 +23,10 @@ def remote_cache_to_input(args):
     return ops.cache_to_input(args, PREFIX)
 
 
+def remote_cache_to_output(args):
+    return ops.cache_to_output(args, PREFIX)
+
+
 def remote_output_to_input(args):
     return ops.output_to_input(args, PREFIX)
 

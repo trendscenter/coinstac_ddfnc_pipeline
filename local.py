@@ -21,7 +21,8 @@ LOCAL_SCICA_PHASES = \
     pk.DFNC_PREPROC_LOCAL_EXEMPLARS + \
     pk.DFNC_PREPROC_LOCAL + \
     pk.DKMEANS_LOCAL + \
-    pk.DKM_NOEX_LOCAL
+    pk.DKM_NOEX_LOCAL + \
+    pk.DFNC_STATS_LOCAL
 
 if __name__ == '__main__':
 

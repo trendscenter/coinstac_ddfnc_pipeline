@@ -21,7 +21,8 @@ REMOTE_SCICA_PHASES = \
     pk.DFNC_PREPROC_REMOTE_EXEMPLARS + \
     pk.DFNC_PREPROC_REMOTE + \
     pk.DKMEANS_REMOTE + \
-    pk.DKM_NOEX_REMOTE
+    pk.DKM_NOEX_REMOTE + \
+    pk.DFNC_STATS_REMOTE
 
 if __name__ == '__main__':
 
