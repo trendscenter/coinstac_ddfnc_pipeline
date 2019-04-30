@@ -4,6 +4,77 @@ import matplotlib.pyplot as plt
 import numpy as np
 import utils as ut
 from nilearn import plotting as niplot
+from nipype.interfaces.base import File, traits
+from nipype.interfaces.matlab import MatlabCommand, MatlabInputSpec
+import scipy.io as sio
+
+
+class StatevectorInputSpec(MatlabInputSpec):
+    k = traits.Int(mandatory=True)
+    a = traits.List(mandatory=True,
+                    desc='List of Files for Back-Reconstruction')
+
+
+class StatevectorOutputSpec(MatlabInputSpec):
+    F = traits.List(exists=True)
+    TM = traits.List(exists=True)
+    MDT = traits.List(exists=True)
+    NT = traits.List(exists=True)
+    matlab_output = traits.String(exists=True)
+
+
+class StatevectorStats(MatlabCommand):
+    """ Basic Hello World that displays Hello <name> in MATLAB
+
+    Returns
+    -------
+
+    matlab_output : capture of matlab output which may be
+                    parsed by user to get computation results
+
+    Example
+    --------
+
+    >>> recon = BackRecon()
+    >>> recon.inputs.files = ['subject_1.nii', 'subject_2.nii']
+    >>> recon.inputs.mask = 'mask.nii'
+    >>> recon.inputs.ica_sig = 'gica_signal.mat'
+    >>> recon.inputs.ica_varname = 'SM'
+    >>> recon.inputs.preproc_type = 'time_mean'
+    >>> recon.inputs.algorithm = 'gigica'
+    >>> out = recon.run()
+    """
+    input_spec = StatevectorInputSpec
+    output_spec = StatevectorOutputSpec
+
+    def _runner_script(self):
+        script = """
+           [F, TM, MDT, NT] = statevector_stats(%s, %d);
+           save('statevector_results.mat');
+        """ % (self.inputs.a,
+               self.inputs.k
+               )
+        #print("MATLAB SCRIPT IS %s" % script)
+        return script
+
+    def run(self, **inputs):
+        # inject your script
+        self.inputs.script = self._runner_script()
+        results = super().run(**inputs)
+        stdout = results.runtime.stdout
+        matresults = sio.loadmat('statevector_results.mat')
+        results.outputs.F = matresults.get('F').tolist()
+        results.outputs.TM = matresults.get('TM').tolist()
+        results.outputs.MDT = matresults.get('MDT').tolist()
+        results.outputs.NT = matresults.get('NT').tolist()
+        # attach stdout to outputs to access matlab results
+        results.outputs.matlab_output = stdout
+        return results
+
+    def _list_outputs(self):
+        outputs = self._outputs().get()
+        print(outputs)
+        return outputs
 
 
 def statevector_stats(a, k):
@@ -11,7 +82,7 @@ def statevector_stats(a, k):
     number_windows = len(a)
     a = np.array(a)
     # state_fraction_timeraction of time in each state
-    state_fraction_time = np.zeros((1, k))
+    state_fraction_time = np.zeros((1, k)).flatten()
     for label in range(k):
         state_fraction_time[label] = (sum(a == label)) / number_windows
 
@@ -19,14 +90,15 @@ def statevector_stats(a, k):
     number_transitions = sum(np.abs(np.diff(a)) > 0)
 
     # Mean Dwell Time in Each State
-    mean_dwell_time = np.zeros((1, k))
+    mean_dwell_time = np.zeros((1, k)).flatten()
     for jj in range(k):
-        start_t = np.where(np.diff(a == jj) == 1)
-        end_t = np.where(np.diff(a == jj) == -1)
+        start_t = np.where(np.array(np.diff(a == jj) == 1, dtype=int))[0]
+        end_t = np.where(np.array(np.diff(a == jj) == -1, dtype=int))[0]
         if a[1] == jj:
-            start_t = np.vstack((0, start_t))
+            start_t = np.hstack((np.array(0), start_t))
         if a[-1] == jj:
-            end_t = np.vstack(number_windows)
+            end_t = np.hstack((np.array(number_windows), end_t))
+        print(jj, 'start', start_t, 'end', end_t)
         mean_dwell_time[jj] = np.mean(end_t - start_t)
         if start_t.size == 0 and end_t.size == 0:
             mean_dwell_time[jj] = 0
