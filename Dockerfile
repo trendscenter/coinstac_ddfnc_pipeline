@@ -6,13 +6,13 @@ RUN printf "deb http://archive.debian.org/debian/ jessie main\ndeb-src http://ar
 
 RUN apt-get update
 
-#Update this section on 10/17/2020
+#Update this section on 10/17/2020 
 RUN apt-get install -y --force-yes  python3-gi python3-dbus python3-software-properties
 RUN apt-get install -y --force-yes  software-properties-common
 RUN apt-get install -y --force-yes zip \
     unzip
 
-#Update this section on 10/17/2020
+#Update this section on 10/17/2020 
 RUN apt-get install -y --force-yes 		libjasper-runtime
 RUN apt-get install -y --force-yes      libx11-dev 
 RUN apt-get install -y --force-yes      libxcomposite-dev 
