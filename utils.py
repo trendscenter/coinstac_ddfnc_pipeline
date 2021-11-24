@@ -63,7 +63,7 @@ def default_computation_output(args, template=COMPUTATION_OUTPUT):
 def flatten_data(data, state):
     shp = data.shape
     if len(shp) >= 3:
-        newshp = [np.prod(shp[:(len(shp)-1)]), shp[-1]]
+        newshp = [np.prod(shp[:(len(shp) - 1)]), shp[-1]]
         return np.reshape(data, newshp)
     return data
 
@@ -114,6 +114,7 @@ def read_data(base_directory, file_list, file_type, clientId):
 
     return datasets
 
+
 def get_interpolated_nifti(template_filename, input_filename, destination_dir=None):
     '''
         Get an interpolated version of an file which is interpolated to match a reference.
@@ -142,7 +143,8 @@ def get_interpolated_nifti(template_filename, input_filename, destination_dir=No
         return input_filename
 
     output_filename = os.path.join(
-        base_dir, "%s_INTERP_%d_%d_%d.nii" % (input_prefix, template_img.shape[0], template_img.shape[1], template_img.shape[2]))
+        base_dir,
+        "%s_INTERP_%d_%d_%d.nii" % (input_prefix, template_img.shape[0], template_img.shape[1], template_img.shape[2]))
 
     if os.path.exists(output_filename):
         return output_filename
@@ -153,3 +155,13 @@ def get_interpolated_nifti(template_filename, input_filename, destination_dir=No
     nib.save(output_img, output_filename)
 
     return output_filename
+
+
+def clean_np_arrays(key, dict_obj):
+    for k in dict_obj[key]:
+        if isinstance(dict_obj[key][k], list):
+            acc = []
+            for k1 in dict_obj[key][k]:
+                if isinstance(k, np.ndarray):
+                    acc.append(k1.tolist())
+            dict_obj[key][k] = acc

@@ -14,6 +14,7 @@ import numpy as np
 import utils as ut
 import phase_keys as pk
 from constants import OUTPUT_TEMPLATE
+import traceback
 
 LOCAL_SCICA_PHASES = \
     pk.SPATIALLY_CONSTRAINED_ICA_LOCAL + \
@@ -21,6 +22,10 @@ LOCAL_SCICA_PHASES = \
     pk.DFNC_PREPROC_LOCAL + \
     pk.DKMEANS_LOCAL + \
     pk.DKM_NOEX_LOCAL
+
+# import pydevd_pycharm
+#
+# pydevd_pycharm.settrace('172.17.0.1', port=8881, stdoutToServer=True, stderrToServer=True)
 
 if __name__ == '__main__':
 
@@ -89,6 +94,14 @@ if __name__ == '__main__':
            (str(computation_output.keys()), str(computation_output["output"].keys())), parsed_args["state"])
 
     try:
+        # ut.clean_np_arrays('output', computation_output)
+        # ut.clean_np_arrays('cache', computation_output)
         sys.stdout.write(json.dumps(computation_output))
     except:
-        raise IOError(f"Json parsing error with output:{computation_output['output']}")
+        with open(parsed_args['state']['outputDirectory'] + os.sep + 'EXCEPTION_TRACE.txt', 'w') as e:
+            e.write(traceback.format_exc())
+            e.write("\n\n\n" + "*" * 51 + 'cache' + '*' * 51)
+            e.write(f"\n{computation_output['cache']}")
+            e.write("\n" + "*" * 51 + 'output' + '*' * 51)
+            e.write(f"\n{computation_output['output']}")
+        raise IOError(f"*** Parsing error with output *** : Check EXCEPTION_TRACE.txt file")
