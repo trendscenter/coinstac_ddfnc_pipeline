@@ -15,7 +15,6 @@ import utils as ut
 import phase_keys as pk
 from constants import OUTPUT_TEMPLATE
 
-
 LOCAL_SCICA_PHASES = \
     pk.SPATIALLY_CONSTRAINED_ICA_LOCAL + \
     pk.DFNC_PREPROC_LOCAL_EXEMPLARS + \
@@ -88,4 +87,8 @@ if __name__ == '__main__':
             break
     ut.log("Computation output looks like %s, and output keys %s" %
            (str(computation_output.keys()), str(computation_output["output"].keys())), parsed_args["state"])
-    sys.stdout.write(json.dumps(computation_output))
+
+    try:
+        sys.stdout.write(json.dumps(computation_output))
+    except:
+        raise IOError(f"Json parsing error with output:{computation_output['output']}")
