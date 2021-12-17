@@ -14,7 +14,7 @@ import utils as ut
 import copy
 import phase_keys as pk
 from constants import OUTPUT_TEMPLATE
-
+import traceback
 
 REMOTE_SCICA_PHASES = \
     pk.SPATIALLY_CONSTRAINED_ICA_REMOTE + \
@@ -22,6 +22,7 @@ REMOTE_SCICA_PHASES = \
     pk.DFNC_PREPROC_REMOTE + \
     pk.DKMEANS_REMOTE + \
     pk.DKM_NOEX_REMOTE
+
 
 if __name__ == '__main__':
 
@@ -74,7 +75,7 @@ if __name__ == '__main__':
                        (operation.__name__), parsed_args["state"])
                 ut.log("Operation output is %s, output keys %s" %
                        (str(parsed_args.keys()), str(parsed_args['output'].keys())), parsed_args["state"])
-            if i+1 == len(PIPELINE):
+            if i + 1 == len(PIPELINE):
                 computation_output["success"] = True
             if expected_phases.get('send'):
                 computation_output["output"]["computation_phase"] = expected_phases.get(
@@ -82,7 +83,19 @@ if __name__ == '__main__':
             ut.log("Finished with phase %s" %
                    expected_phases.get("send"), parsed_args["state"])
             break
+
     ut.log("Computation output looks like %s, and output keys %s" %
            (str(computation_output.keys()), str(computation_output["output"].keys())), parsed_args["state"])
 
-    sys.stdout.write(json.dumps(computation_output))
+    try:
+        # ut.clean_np_arrays('output', computation_output)
+        # ut.clean_np_arrays('cache', computation_output)
+        sys.stdout.write(json.dumps(computation_output))
+    except:
+        with open(parsed_args['state']['outputDirectory'] + os.sep + 'EXCEPTION_TRACE.txt', 'w') as e:
+            e.write(traceback.format_exc())
+            e.write("\n\n\n" + "*" * 51 + 'cache' + '*' * 51)
+            e.write(f"\n{computation_output['cache']}")
+            e.write("\n" + "*" * 51 + 'output' + '*' * 51)
+            e.write(f"\n{computation_output['output']}")
+        raise IOError(f"*** Parsing error with output *** : Check EXCEPTION_TRACE.txt file")
