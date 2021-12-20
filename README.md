@@ -21,10 +21,10 @@ Download this repository
 git clone https://github.com/MRN-Code/coinstac_ddfnc_pipeline.git
 ```
 
-Initialize submodules
+Initialize submodules and Get latest code from each repo
 
 ```
-git submodule update --init --recursive
+git submodule update --init --recursive && git submodule update --remote --merge
 ```
 
 Copy the mask and template into the local input folders, using the bash script
