@@ -6,7 +6,7 @@ This was a 2 site run in COINSTAC UI with a pipeline set up to reflect the setti
 
 #### Results Info
 
-The results can be downloaded as a csv file from COINSTAC UI: [View files](https://mygsu-my.sharepoint.com/:f:/r/personal/jromero7_gsu_edu/Documents/ddfnc_results?csf=1&web=1&e=x7Vnid)
+The results can be downloaded as a csv file from COINSTAC UI: [View files](https://mygsu-my.sharepoint.com/:f:/g/personal/jromero7_gsu_edu/ErtmufYwlSdMoKg7jDodSkIBaZeE6SS1AbEA2icM4ckrlQ?e=BuQ5FY)
 
 Here is an animated gif of the generated results: 
 
